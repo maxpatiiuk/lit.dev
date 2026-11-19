@@ -214,7 +214,23 @@ const prod = environment({
   },
 });
 
-const environments = {dev, local, pr, prod};
+const pages = environment({
+  ...local,
+  siteVersion: 'pages',
+  googleAnalyticsId: '',
+  get mainUrl() {
+    return stringEnv('PAGES_ORIGIN');
+  },
+  playgroundSandboxUrl: prod.playgroundSandboxUrl,
+  githubMainUrl: prod.githubMainUrl,
+  githubApiUrl: prod.githubApiUrl,
+  githubAvatarUrl: prod.githubAvatarUrl,
+  githubAuthorizeRedirectUrl: '',
+  githubClientId: '',
+  githubClientSecret: '',
+});
+
+const environments = {dev, local, pr, prod, pages};
 
 /**
  * Return the environment configuration matching the LITDEV_ENV environment

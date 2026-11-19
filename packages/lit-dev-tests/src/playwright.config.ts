@@ -17,7 +17,7 @@ const config: PlaywrightTestConfig = {
   retries: 3,
   use: {
     screenshot: 'off',
-    baseURL: 'http://localhost:6415/',
+    baseURL: process.env.LITDEV_TEST_BASE_URL ?? 'http://localhost:6415/',
     permissions: ['clipboard-read', 'clipboard-write'],
   },
   // Prevent implicit snapshot creation and tests passing. Create screenshots
