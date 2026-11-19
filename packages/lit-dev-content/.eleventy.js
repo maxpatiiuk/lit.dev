@@ -40,6 +40,10 @@ const litPlugin = require('@lit-labs/eleventy-plugin-lit');
 const slugify = (s) => slugifyLib(s, {lower: true});
 
 const DEV = ENV.eleventyMode === 'dev';
+const pagesBasePath =
+  process.env.LITDEV_ENV === 'pages'
+    ? new URL(ENV.mainUrl).pathname.replace(/\/$/, '')
+    : '';
 
 const cspInlineScriptHashes = new Set();
 
@@ -55,6 +59,11 @@ module.exports = function (eleventyConfig) {
     wrapperClass: '',
   });
   eleventyConfig.addPlugin(eleventyNavigationPlugin);
+  if (pagesBasePath) {
+    const {EleventyHtmlBasePlugin} = require('@11ty/eleventy');
+    eleventyConfig.addPlugin(EleventyHtmlBasePlugin, {baseHref: pagesBasePath});
+    eleventyConfig.addGlobalData('pagesBasePath', pagesBasePath);
+  }
   eleventyConfig.addPlugin(playgroundPlugin, {
     sandboxUrl: ENV.playgroundSandboxUrl,
     cdnBaseUrl: ENV.playgroundCdnBaseUrl,
@@ -524,7 +533,13 @@ ${content}
         ].join('\n')}`
       );
     }
-    return `<style>${result.styles}</style>`;
+    const styles = pagesBasePath
+      ? result.styles.replace(
+          /url\((['"]?)\/(?!\/)/g,
+          `url($1${pagesBasePath}/`
+        )
+      : result.styles;
+    return `<style>${styles}</style>`;
   });
 
   /**
@@ -637,7 +652,8 @@ ${content}
       // Inline all Playground project files directly into their manifests, to
       // cut down on requests per project.
       await inlinePlaygroundFilesIntoManifests(
-        `${ENV.eleventyOutDir}/samples/**/project.json`
+        `${ENV.eleventyOutDir}/samples/**/project.json`,
+        pagesBasePath
       );
 
       // Pre-compress all outputs as .br and .gz files so the server can read

@@ -339,10 +339,11 @@ export class LitDevPlaygroundPage extends LitElement {
       .querySelector('.exampleItem.active')
       ?.classList.remove('active');
 
+    const basePath = document.documentElement.dataset.basePath ?? '';
     if (urlFiles) {
       this._hideCodeLanguageSwitch();
       this._playgroundProject.config = {
-        extends: '/samples/base.json',
+        extends: `${basePath}/samples/base.json`,
         files: Object.fromEntries(
           urlFiles.map(({name, content, hidden}) => [name, {content, hidden}])
         ),
@@ -356,7 +357,7 @@ export class LitDevPlaygroundPage extends LitElement {
       }
       const samplesRoot =
         getCodeLanguagePreference() === 'ts' ? '/samples' : '/samples/js';
-      this._playgroundProject.projectSrc = `${samplesRoot}/${sample}/project.json`;
+      this._playgroundProject.projectSrc = `${basePath}${samplesRoot}/${sample}/project.json`;
 
       const link = this._examplesDrawer.querySelector(
         `.exampleItem[data-sample="${sample}"]`

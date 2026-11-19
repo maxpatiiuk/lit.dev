@@ -16,7 +16,8 @@ import {ProjectManifest} from 'playground-elements/shared/worker-api.js';
  * original project files.
  */
 export const inlinePlaygroundFilesIntoManifests = async (
-  globPattern: string
+  globPattern: string,
+  basePath = ''
 ) => {
   const files = (await glob(globPattern)) as string[];
   const toDelete = new Set<string>();
@@ -24,6 +25,13 @@ export const inlinePlaygroundFilesIntoManifests = async (
     files.map(async (manifestPath) => {
       const manifestStr = await fs.readFile(manifestPath, 'utf8');
       const manifest = JSON.parse(manifestStr) as ProjectManifest;
+      if (
+        basePath &&
+        manifest.extends?.startsWith('/') &&
+        !manifest.extends.startsWith('//')
+      ) {
+        manifest.extends = basePath + manifest.extends;
+      }
       for (const [fileName, fileOpts] of Object.entries(manifest.files ?? {})) {
         if (fileOpts.content !== undefined) {
           continue;

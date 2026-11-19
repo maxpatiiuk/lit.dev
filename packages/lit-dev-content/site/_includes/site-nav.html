@@ -27,7 +27,7 @@
    <a href="{{ site.baseurl }}/blog/">Blog</a>
 </li>
 <li class="navItem">
-   <litdev-search-modal></litdev-search-modal>
+   <litdev-search-modal{% if pagesBasePath %} iconsrc="{{ pagesBasePath }}/images/icons/lit-search.svg#icon"{% endif %}></litdev-search-modal>
 </li>
 <li>
    <ul class="icons">
@@ -43,7 +43,7 @@
                aria-label="GitHub"
             >
             <svg>
-               <use href="/images/social/github.svg#github"></use>
+               <use href="{{ pagesBasePath }}/images/social/github.svg#github"></use>
             </svg>
          </a>
       </li>
